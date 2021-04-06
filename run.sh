@@ -3,9 +3,9 @@
 #python server.py & 
 sleep 2 # Sleep for 2s to give the server enough time to start
 
-for number in {0..4}
+for number in {0..50}
 do
-python client.py --cid=$number &> output.log &
+python client.py --cid=$number &> ./output/output$number.log &
 done
 
 #python client.py --cid=0 &> output0.log & 

@@ -69,7 +69,7 @@ class FemnistClient(fl.client.NumPyClient):
 def main() -> None:
     # Parse command line argument `partition`
     parser = argparse.ArgumentParser(description="Flower")
-    parser.add_argument("--cid", type=int, choices=range(0, 10), required=True)
+    parser.add_argument("--cid", type=int, choices=range(0, 100), required=True)
     args = parser.parse_args()
 
     # Load and compile Keras model
@@ -78,7 +78,7 @@ def main() -> None:
 
     # Get data for client, and prepare for input
     (x_train, y_train), (x_test, y_test) = get_data_for_input(args.cid)
-    print("(x_train, y_train), (x_test, y_test) = ({}, {}), ({}, {})".format(len(x_train), len(y_train), len(x_test), len(y_test)))
+    #print("(x_train, y_train), (x_test, y_test) = ({}, {}), ({}, {})".format(len(x_train), len(y_train), len(x_test), len(y_test)))
 
     # Start Flower client
     client = FemnistClient(model, x_train, y_train, x_test, y_test)

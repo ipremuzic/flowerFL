@@ -12,8 +12,8 @@ def get_dataset(dataset, use_val_set=False):
     eval_set = 'test' if not use_val_set else 'val'           #REMOVE
     
     # local path to train and test data dir
-    train_data_dir = os.path.join('..', 'quickstart_tensorflow','data', dataset, 'data', 'train') 
-    test_data_dir = os.path.join('..', 'quickstart_tensorflow', 'data', dataset, 'data', eval_set)
+    train_data_dir = os.path.join('.','data', dataset, 'data', 'train') 
+    test_data_dir = os.path.join('.', 'data', dataset, 'data', eval_set)
 
     users, groups, train_data, test_data = read_data(train_data_dir, test_data_dir)
 

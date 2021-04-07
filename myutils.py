@@ -15,35 +15,25 @@ def get_dataset(dataset, use_val_set=False):
     train_data_dir = os.path.join('.','data', dataset, 'data', 'train') 
     test_data_dir = os.path.join('.', 'data', dataset, 'data', eval_set)
 
-    users, groups, train_data, test_data = read_data(train_data_dir, test_data_dir)
+    clients, _ , train_data, test_data = read_data(train_data_dir, test_data_dir)
 
-    return users, groups, train_data, test_data
+    return clients, train_data, test_data
 
 
-def get_user_at_index(index, users):
+def get_user_at_index(index, clients):
     """
-    Ger user_id at index.
+    Ger user_id from users at index.
     """
-    return users[index] 
+    return clients[index] 
 
 
-def get_data_for_client(user_id, users, groups, train_data, test_data):
+def get_data_for_client(client_id, clients, train_data, test_data):
     """
     Get train and test data for particular user/client.
     """
-    for u in users:
-        if u == user_id:
-            u_train_data, u_test_data = train_data[u], test_data[u]
+    for c in clients:
+        if c == client_id:
+            c_train_data, c_test_data = train_data[c], test_data[c]
             break
-    
-    raw_train_x = u_train_data['x']
-    raw_train_y = u_train_data['y']
-    raw_test_x = u_test_data['x']
-    raw_test_y = u_test_data['y']
-    
-    x_train = np.array(raw_train_x)
-    y_train = np.array(raw_train_y)
-    x_test = np.array(raw_test_x)
-    y_test = np.array(raw_test_y)
 
-    return (x_train, y_train), (x_test, y_test)
+    return c_train_data, c_test_data

@@ -8,7 +8,7 @@ from tensorflow import keras
 
 import flwr as fl
 
-from model import create_model, get_data_for_input
+from model import create_model, get_data_for_input, process_data
 
 # Make TensorFlow logs less verbose
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -66,6 +66,21 @@ class FemnistClient(fl.client.NumPyClient):
         return loss, num_examples_test, {"accuracy": accuracy}
 
 
+def start_client(client_id, train_data, test_data):
+    # Load and compile Keras model
+    model = create_model()
+    model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
+
+    # Get processed client data that can be fed to model
+    (x_train, y_train), (x_test, y_test) = process_data(train_data, test_data)
+    print("client_id: {} ;(x_train, y_train), (x_test, y_test) = ({}, {}), ({}, {})".format(client_id, len(x_train), len(y_train), len(x_test), len(y_test)))
+
+    # Start Flower client
+    client = FemnistClient(model, x_train, y_train, x_test, y_test)
+    fl.client.start_numpy_client("[::]:8080", client=client)
+
+
+# TODO: refractor or remove
 def main() -> None:
     # Parse command line argument `partition`
     parser = argparse.ArgumentParser(description="Flower")

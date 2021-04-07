@@ -1,3 +1,5 @@
+import os
+
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import flwr as fl
@@ -6,8 +8,10 @@ from tensorflow import keras
 
 from model import create_model, get_data_for_input
 
+# Make TensorFlow logs less verbose
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-def main() -> None:
+def start_server(num_rounds: int, min_num_clients: int, min_fit_clients: int) -> None:
     # Load and compile model for
     # 1. server-side parameter initialization
     # 2. server-side parameter evaluation
@@ -18,9 +22,9 @@ def main() -> None:
     strategy = fl.server.strategy.FedAvg(
         fraction_fit=0.3,
         fraction_eval=0.2,
-        min_fit_clients=3,
+        min_fit_clients=min_fit_clients,
         min_eval_clients=3,
-        min_available_clients=40,
+        min_available_clients=min_num_clients,
         eval_fn=get_eval_fn(model),
         on_fit_config_fn=fit_config,
         on_evaluate_config_fn=evaluate_config,
@@ -28,7 +32,7 @@ def main() -> None:
     )
 
     # Start Flower server for four rounds of federated learning
-    fl.server.start_server("[::]:8080", config={"num_rounds": 100}, strategy=strategy)
+    fl.server.start_server("[::]:8080", config={"num_rounds": num_rounds}, strategy=strategy)
 
 
 # TODO: fix
@@ -77,4 +81,4 @@ def evaluate_config(rnd: int):
 
 
 if __name__ == "__main__":
-    main()
+    start_server(num_rounds=100, min_num_clients=40, min_fit_clients=3)

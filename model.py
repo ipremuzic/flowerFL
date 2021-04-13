@@ -2,8 +2,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from myutils import get_dataset, get_data_for_client, get_user_at_index 
-
 # Model / data parameters
 num_classes = 62
 input_shape = (28, 28, 1)
@@ -23,29 +21,15 @@ def create_model():
         ]
     )
 
+    # Uncomment to print model summary
     #model.summary()
+
     return model
-
-
-# TODO: remove, deprecated
-def get_data_for_input(client_index):
-    """
-    Get data for particualr client, and prepare it for input.
-    """
-    clients, train_data, test_data = get_dataset("femnist")
-    #print("train_data_size= {} , test_data_size={}".format(len(train_data), len(test_data)))
-    #print("User: {}, total users: {}".format(client_index, len(clients)))
-    client_id = get_user_at_index(client_index, clients)
-
-    c_train_data, c_test_data = get_data_for_client(client_id, clients, train_data, test_data)
-    (x_train, y_train), (x_test, y_test) = process_data(c_train_data, c_test_data)
-
-    return (x_train, y_train), (x_test, y_test)
 
 
 def process_data(train_data, test_data):
     """
-    Process clients dataset so it is ready for input.
+    Process client's dataset so it is ready for input.
     """
     raw_train_x = train_data['x']
     raw_train_y = train_data['y']

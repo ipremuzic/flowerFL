@@ -6,7 +6,7 @@ import flwr as fl
 import tensorflow as tf
 from tensorflow import keras
 
-from model import create_model, get_data_for_input
+from model import create_model
 
 # Make TensorFlow logs less verbose
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -25,7 +25,7 @@ def start_server(num_rounds: int, min_num_clients: int, min_fit_clients: int) ->
         min_fit_clients=min_fit_clients,
         min_eval_clients=3,
         min_available_clients=min_num_clients,
-        eval_fn=get_eval_fn(model),
+        #eval_fn=get_eval_fn(model),
         on_fit_config_fn=fit_config,
         on_evaluate_config_fn=evaluate_config,
         initial_parameters=model.get_weights(),
@@ -35,16 +35,15 @@ def start_server(num_rounds: int, min_num_clients: int, min_fit_clients: int) ->
     fl.server.start_server("[::]:8080", config={"num_rounds": num_rounds}, strategy=strategy)
 
 
-# TODO: fix
+# TODO: remove server side evaluation
 def get_eval_fn(model):
     """Return an evaluation function for server-side evaluation."""
 
     # Load data and model here to avoid the overhead of doing it in `evaluate` itself
-    (x_train, y_train), _ = get_data_for_input(0)
-
+    (x_train, y_train), _ = tf.keras.datasets.cifar10.load_data()
 
     # Use the last 5k training examples as a validation set
-    #x_val, y_val = x_train[45000:50000], y_train[45000:50000]
+    x_val, y_val = x_train[45000:50000], y_train[45000:50000]
 
     # The `evaluate` function will be called after every round
     def evaluate(weights: fl.common.Weights) -> Optional[Tuple[float, float]]:

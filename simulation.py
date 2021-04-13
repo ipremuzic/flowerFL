@@ -59,5 +59,4 @@ def simulation(num_rounds: int, num_clients: int, min_fit_clients: int):
 
 
 if __name__ == "__main__":
-    # TOTO: load dataset here; num_clienta = users
     simulation(num_rounds=100, num_clients=10, min_fit_clients=3)

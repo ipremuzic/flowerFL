@@ -8,7 +8,9 @@ from tensorflow import keras
 
 import flwr as fl
 
-from model import create_model, get_data_for_input, process_data
+from myutils import get_client_at_index, get_data_for_client
+
+from model import create_model, process_data
 
 # Make TensorFlow logs less verbose
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -80,24 +82,15 @@ def start_client(client_id, train_data, test_data):
     fl.client.start_numpy_client("[::]:8080", client=client)
 
 
-# TODO: refractor or remove
 def main() -> None:
-    # Parse command line argument `partition`
+    # Parse command line argument 'cid'
     parser = argparse.ArgumentParser(description="Flower")
     parser.add_argument("--cid", type=int, choices=range(0, 100), required=True)
     args = parser.parse_args()
 
-    # Load and compile Keras model
-    model = create_model()
-    model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
-
-    # Get data for client, and prepare for input
-    (x_train, y_train), (x_test, y_test) = get_data_for_input(args.cid)
-    #print("(x_train, y_train), (x_test, y_test) = ({}, {}), ({}, {})".format(len(x_train), len(y_train), len(x_test), len(y_test)))
-
-    # Start Flower client
-    client = FemnistClient(model, x_train, y_train, x_test, y_test)
-    fl.client.start_numpy_client("[::]:8080", client=client)
+    # Get dataset and start client
+    c_train_data, c_test_data = get_data_for_client(args.cid)
+    start_client(args.cid, c_train_data, c_test_data)
 
 
 if __name__ == "__main__":
